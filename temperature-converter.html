@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temperature Converter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      width: 380px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      color: #1a202c;
+      margin-bottom: 32px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .input-group:focus-within {
+      border-color: #4299e1;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      border: none;
+      outline: none;
+      color: #2d3748;
+    }
+
+    .unit {
+      padding: 12px 16px;
+      background: #edf2f7;
+      color: #718096;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: #a0aec0;
+      font-size: 0.85rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .result {
+      background: #ebf8ff;
+      border: 2px solid #bee3f8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2b6cb0;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result.empty {
+      color: #a0aec0;
+      font-weight: 400;
+      font-size: 1rem;
+    }
+
+    .btn-clear {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 10px;
+      background: none;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      color: #718096;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear:hover {
+      border-color: #fc8181;
+      color: #e53e3e;
+    }
+
+    .formula {
+      margin-top: 24px;
+      padding: 12px 16px;
+      background: #f7fafc;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #718096;
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Temperature Converter</h1>
+
+    <div class="field">
+      <label>Celsius</label>
+      <div class="input-group">
+        <input type="number" id="celsius" placeholder="Enter °C" step="any">
+        <span class="unit">°C</span>
+      </div>
+    </div>
+
+    <div class="divider">converts to</div>
+
+    <div class="field">
+      <label>Fahrenheit</label>
+      <div class="input-group">
+        <input type="number" id="fahrenheit" placeholder="Enter °F" step="any">
+        <span class="unit">°F</span>
+      </div>
+    </div>
+
+    <div class="divider">result</div>
+
+    <div class="result empty" id="result">Enter a value above</div>
+
+    <button class="btn-clear" onclick="clearAll()">Clear</button>
+
+    <div class="formula">
+      °F = (°C × 9/5) + 32 &nbsp;|&nbsp; °C = (°F − 32) × 5/9
+    </div>
+  </div>
+
+  <script>
+    const celsiusInput = document.getElementById('celsius');
+    const fahrenheitInput = document.getElementById('fahrenheit');
+    const result = document.getElementById('result');
+
+    celsiusInput.addEventListener('input', () => {
+      const c = parseFloat(celsiusInput.value);
+      if (celsiusInput.value === '' || isNaN(c)) {
+        fahrenheitInput.value = '';
+        setResult(null);
+        return;
+      }
+      const f = (c * 9 / 5) + 32;
+      fahrenheitInput.value = round(f);
+      setResult(`${round(c)} °C = ${round(f)} °F`);
+    });
+
+    fahrenheitInput.addEventListener('input', () => {
+      const f = parseFloat(fahrenheitInput.value);
+      if (fahrenheitInput.value === '' || isNaN(f)) {
+        celsiusInput.value = '';
+        setResult(null);
+        return;
+      }
+      const c = (f - 32) * 5 / 9;
+      celsiusInput.value = round(c);
+      setResult(`${round(f)} °F = ${round(c)} °C`);
+    });
+
+    function round(val) {
+      return Math.round(val * 100) / 100;
+    }
+
+    function setResult(text) {
+      if (text === null) {
+        result.textContent = 'Enter a value above';
+        result.classList.add('empty');
+      } else {
+        result.textContent = text;
+        result.classList.remove('empty');
+      }
+    }
+
+    function clearAll() {
+      celsiusInput.value = '';
+      fahrenheitInput.value = '';
+      setResult(null);
+      celsiusInput.focus();
+    }
+  </script>
+</body>
+</html>
